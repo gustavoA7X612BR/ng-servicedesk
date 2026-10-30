@@ -124,4 +124,16 @@ describe('PostsListPage', () => {
       'Não foi possível carregar as publicações',
     );
   });
+
+  it('requests the list again when the user retries after an error', () => {
+    createPage(throwError(() => new Error('network error')));
+    postApi.getPosts.mockReturnValue(of(posts));
+
+    const retryButton = fixture.nativeElement.querySelector('.retry-button') as HTMLButtonElement;
+    retryButton.click();
+    fixture.detectChanges();
+
+    expect(postApi.getPosts).toHaveBeenCalledTimes(2);
+    expect(fixture.nativeElement.querySelectorAll('.post-card').length).toBe(10);
+  });
 });

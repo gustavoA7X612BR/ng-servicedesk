@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, ParamMap, convertToParamMap, provideRouter } from '@angular/router';
-import { Observable, Subject, of, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, finalize, of, throwError } from 'rxjs';
 
 import { Post } from '../../../core/models/json-placeholder-post.model';
 import { PostApiService } from '../services/post-api.service';
@@ -18,13 +18,18 @@ describe('PostDetailPage', () => {
     body: 'The full body of this publication.',
   };
 
-  function createPage(response: Observable<Post> = of(post), id = String(post.id)): void {
-    postApi = { getPostById: vi.fn(() => response) };
+  function createPage(
+    response: Observable<Post> = of(post),
+    id = String(post.id),
+    routeParams: Observable<ParamMap> = of(convertToParamMap({ id })),
+    responseForId: (postId: number) => Observable<Post> = () => response,
+  ): void {
+    postApi = { getPostById: vi.fn((postId: number) => responseForId(postId)) };
     TestBed.configureTestingModule({
       imports: [PostDetailPage],
       providers: [
         provideRouter([]),
-        { provide: ActivatedRoute, useValue: { paramMap: of<ParamMap>(convertToParamMap({ id })) } },
+        { provide: ActivatedRoute, useValue: { paramMap: routeParams } },
         { provide: PostApiService, useValue: postApi },
       ],
     });
@@ -86,5 +91,30 @@ describe('PostDetailPage', () => {
 
     expect(postApi.getPostById).not.toHaveBeenCalled();
     expect(fixture.nativeElement.textContent).toContain('Publicação não encontrada');
+  });
+
+  it('loads a new ID in the active page and cancels the previous request', () => {
+    const routeParams = new BehaviorSubject<ParamMap>(convertToParamMap({ id: '1' }));
+    const firstResponse = new Subject<Post>();
+    const secondResponse = new Subject<Post>();
+    let firstRequestCancelled = false;
+    const secondPost: Post = { ...post, id: 2, title: 'Second publication' };
+
+    createPage(of(post), '1', routeParams, (id) =>
+      id === 1 ? firstResponse.pipe(finalize(() => (firstRequestCancelled = true))) : secondResponse,
+    );
+
+    expect(postApi.getPostById).toHaveBeenCalledWith(1);
+    routeParams.next(convertToParamMap({ id: '2' }));
+
+    expect(firstRequestCancelled).toBe(true);
+    expect(postApi.getPostById).toHaveBeenLastCalledWith(2);
+
+    secondResponse.next(secondPost);
+    fixture.detectChanges();
+    firstResponse.next(post);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('h1')?.textContent).toContain('Second publication');
   });
 });
