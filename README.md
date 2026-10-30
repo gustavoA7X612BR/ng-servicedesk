@@ -1,59 +1,85 @@
-# NgServicedesk
+# ServiceDesk
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.24.
+Aplicação de demonstração construída com Angular. Ela consulta publicações fictícias do [JSONPlaceholder](https://jsonplaceholder.typicode.com/) para demonstrar uma listagem pesquisável e paginada e uma página de detalhes. Os registros não representam chamados reais de suporte.
 
-## Development server
+## Funcionalidades
 
-To start a local development server, run:
+- Listagem de publicações com pesquisa por título, ordenação por ID e paginação local.
+- Exibição dos detalhes de uma publicação pela rota `/posts/:id`.
+- Estados de carregamento, lista vazia, registro não encontrado e falha de consulta.
+- Validação em tempo de execução das respostas recebidas da API.
 
-```bash
-ng serve
-```
+## Tecnologias
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+- Angular 21 e TypeScript em modo estrito.
+- Angular Router e `HttpClient`.
+- RxJS para consultas e controle do ciclo de vida das inscrições.
+- Vitest pelo executor de testes do Angular CLI.
 
-## Code scaffolding
+## Pré-requisitos e instalação
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Instale Node.js e npm em versões compatíveis com Angular 21. O projeto declara `npm@11.11.0` como gerenciador e inclui `package-lock.json`.
 
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+Na raiz do repositório, instale as dependências:
 
 ```bash
-ng build
+npm install
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## Executar localmente
 
 ```bash
-ng test
+npm start
 ```
 
-## Running end-to-end tests
+Abra [http://localhost:4200/](http://localhost:4200/). A rota inicial mostra a listagem. Selecione o título de uma publicação para abrir `/posts/:id`.
 
-For end-to-end (e2e) testing, run:
+## Testes e build
+
+Execute os testes em modo não interativo:
 
 ```bash
-ng e2e
+npm test -- --watch=false
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+O projeto contém testes unitários do serviço HTTP, testes das páginas e do componente de paginação, além de um teste de navegação entre listagem e detalhes. Os testes substituem a API por respostas locais simuladas e não dependem da disponibilidade do JSONPlaceholder. Não há configuração de testes end-to-end neste momento.
 
-## Additional Resources
+Gere o build de produção:
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+```bash
+npm run build
+```
+
+## Arquitetura e organização
+
+```text
+src/app/
+├── core/
+│   ├── models/                 # Contrato TypeScript da publicação
+│   └── services/               # Serviços transversais, quando necessários
+├── features/
+│   └── tickets/
+│       ├── components/         # Componentes específicos da funcionalidade
+│       ├── pages/              # PostsListPage e PostDetailPage
+│       └── services/           # PostApiService e seus testes
+└── shared/
+    ├── components/             # Componentes compartilhados, quando necessários
+    └── pipes/                  # Pipes compartilhados, quando necessários
+```
+
+As páginas coordenam os estados e a apresentação. `PostApiService` concentra as chamadas HTTP e valida o formato dos dados antes de retorná-los aos modelos internos. A paginação, por enquanto, é um componente de apresentação específico da funcionalidade de publicações.
+
+## Integração com JSONPlaceholder
+
+A aplicação consulta somente:
+
+- `GET https://jsonplaceholder.typicode.com/posts` para a listagem.
+- `GET https://jsonplaceholder.typicode.com/posts/:id` para os detalhes.
+
+Cada publicação usa os campos `userId` e `id` (números), `title` e `body` (strings). Respostas fora desse formato geram `InvalidPostPayloadError`; falhas HTTP permanecem erros HTTP, incluindo o status 404.
+
+A listagem carrega a coleção e aplica pesquisa, ordenação por ID e paginação no cliente. As publicações do JSONPlaceholder são fictícias. Embora o serviço aceite operações de escrita simuladas, este projeto não as utiliza e não apresenta alterações persistidas.
+
+## Limitações dos dados demonstrativos
+
+Os registros são publicações de exemplo, não chamados reais. A API não fornece status, prioridade, categoria, responsável ou datas de abertura para esses dados. A aplicação não implementa autenticação, gravação de alterações nem integração com serviços externos de notificação.
