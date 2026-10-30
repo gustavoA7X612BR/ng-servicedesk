@@ -20,13 +20,17 @@ function isValidDate(value: unknown): value is string {
   return typeof value === 'string' && Number.isFinite(Date.parse(value));
 }
 
+function hasText(value: unknown): value is string {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
 export function isTicketHistoryEvent(value: unknown): value is TicketHistoryEvent {
   return (
     isRecord(value) &&
-    typeof value['id'] === 'string' &&
+    hasText(value['id']) &&
     isEnumValue(TicketHistoryEventType, value['type']) &&
-    typeof value['description'] === 'string' &&
-    typeof value['author'] === 'string' &&
+    hasText(value['description']) &&
+    hasText(value['author']) &&
     isValidDate(value['createdAt'])
   );
 }
@@ -35,20 +39,24 @@ export function isTicket(value: unknown): value is Ticket {
   if (!isRecord(value)) return false;
 
   return (
-    typeof value['id'] === 'string' &&
-    typeof value['title'] === 'string' &&
-    typeof value['description'] === 'string' &&
-    typeof value['requester'] === 'string' &&
+    hasText(value['id']) &&
+    hasText(value['title']) &&
+    hasText(value['description']) &&
+    hasText(value['requester']) &&
     typeof value['requesterEmail'] === 'string' &&
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value['requesterEmail']) &&
     isEnumValue(TicketCategory, value['category']) &&
     isEnumValue(TicketPriority, value['priority']) &&
     isEnumValue(TicketStatus, value['status']) &&
-    (value['assignedAgent'] === undefined || typeof value['assignedAgent'] === 'string') &&
+    (value['assignedAgent'] === undefined || hasText(value['assignedAgent'])) &&
     isValidDate(value['createdAt']) &&
     isValidDate(value['updatedAt']) &&
     Array.isArray(value['history']) &&
     value['history'].every(isTicketHistoryEvent) &&
     isEnumValue(TicketOrigin, value['origin']) &&
-    (value['externalPostId'] === undefined || Number.isFinite(value['externalPostId']))
+    (value['externalPostId'] === undefined || Number.isInteger(value['externalPostId'])) &&
+    (value['origin'] === TicketOrigin.Local
+      ? value['externalPostId'] === undefined
+      : Number.isInteger(value['externalPostId']) && Number(value['externalPostId']) > 0)
   );
 }

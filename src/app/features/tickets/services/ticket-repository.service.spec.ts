@@ -79,6 +79,13 @@ describe('TicketRepositoryService', () => {
     expect(() => repository.load()).toThrowError(/inválidos/);
   });
 
+  it('rejects duplicate ticket IDs in storage', () => {
+    setup();
+    values.set('ng-servicedesk.tickets', JSON.stringify({ version: 1, tickets: [ticket, ticket] }));
+
+    expect(() => repository.load()).toThrowError(/inválidos/);
+  });
+
   it('surfaces storage write failures', () => {
     setup({ setItem: () => { throw new Error('quota'); } });
 

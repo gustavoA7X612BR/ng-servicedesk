@@ -28,6 +28,15 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
+function isValidTicketCollection(value: unknown[]): value is TicketList {
+  if (!value.every(isTicket)) return false;
+  const ids = value.map((ticket) => ticket.id);
+  const externalReferences = value
+    .map((ticket) => ticket.externalPostId)
+    .filter((id): id is number => id !== undefined);
+  return new Set(ids).size === ids.length && new Set(externalReferences).size === externalReferences.length;
+}
+
 @Injectable({ providedIn: 'root' })
 export class TicketRepositoryService {
   private readonly storage = inject(TICKET_STORAGE);
@@ -58,7 +67,7 @@ export class TicketRepositoryService {
         'Os dados locais foram criados por uma versão incompatível. O conteúdo foi preservado.',
       );
     }
-    if (!Array.isArray(payload['tickets']) || !payload['tickets'].every(isTicket)) {
+    if (!Array.isArray(payload['tickets']) || !isValidTicketCollection(payload['tickets'])) {
       throw new TicketStorageError('corrupt', 'Há tickets locais inválidos. O conteúdo foi preservado.');
     }
 
@@ -66,7 +75,7 @@ export class TicketRepositoryService {
   }
 
   save(tickets: TicketList): void {
-    if (!tickets.every(isTicket)) {
+    if (!isValidTicketCollection(tickets)) {
       throw new TicketStorageError('invalid', 'Não foi possível salvar tickets com dados inválidos.');
     }
 

@@ -44,5 +44,7 @@ describe('isTicket', () => {
   it('rejects malformed values', () => {
     expect(isTicket(null)).toBe(false);
     expect(isTicket({ ...validTicket, createdAt: 'not a date' })).toBe(false);
+    expect(isTicket({ ...validTicket, requesterEmail: 'not-an-email' })).toBe(false);
+    expect(isTicket({ ...validTicket, title: '   ' })).toBe(false);
   });
 });
