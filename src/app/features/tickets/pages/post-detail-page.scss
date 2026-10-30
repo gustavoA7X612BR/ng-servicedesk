@@ -1,0 +1,58 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #f4f6f8;
+  color: #18212b;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.detail-page {
+  box-sizing: border-box;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 3rem 1.25rem;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  color: #174ea6;
+}
+
+.post-detail,
+.message,
+.status {
+  padding: clamp(1.25rem, 5vw, 2.5rem);
+  border: 1px solid #d7dde3;
+  border-radius: 0.75rem;
+  background: white;
+}
+
+.eyebrow {
+  color: #586575;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0 0 1.25rem;
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  line-height: 1.25;
+  text-transform: capitalize;
+}
+
+.post-body {
+  line-height: 1.7;
+  white-space: pre-line;
+}
+
+.post-user {
+  margin: 1.5rem 0 0;
+  color: #586575;
+}
+
+.error {
+  color: #9b1c1c;
+}

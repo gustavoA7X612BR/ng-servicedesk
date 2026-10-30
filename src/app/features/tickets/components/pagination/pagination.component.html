@@ -1,0 +1,9 @@
+<nav class="pagination" aria-label="Paginação das publicações">
+  <button type="button" [disabled]="currentPage <= 1" (click)="goToPreviousPage()">
+    Anterior
+  </button>
+  <span aria-live="polite">Página {{ currentPage }} de {{ pageCount }}</span>
+  <button type="button" [disabled]="currentPage >= pageCount" (click)="goToNextPage()">
+    Próxima
+  </button>
+</nav>

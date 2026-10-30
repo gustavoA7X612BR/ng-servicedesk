@@ -1,0 +1,31 @@
+<main class="detail-page">
+  <a class="back-link" routerLink="/">← Voltar para publicações</a>
+
+  @if (state(); as currentState) {
+    @switch (currentState.kind) {
+      @case ('loading') {
+        <p class="status" role="status">Carregando publicação…</p>
+      }
+      @case ('not-found') {
+        <section class="message" role="status">
+          <h1>Publicação não encontrada</h1>
+          <p>Não há uma publicação com esse identificador.</p>
+        </section>
+      }
+      @case ('error') {
+        <section class="message error" role="alert">
+          <h1>Não foi possível consultar a publicação</h1>
+          <p>{{ currentState.message }}</p>
+        </section>
+      }
+      @case ('found') {
+        <article class="post-detail">
+          <p class="eyebrow">Publicação #{{ currentState.post.id }}</p>
+          <h1>{{ currentState.post.title }}</h1>
+          <p class="post-body">{{ currentState.post.body }}</p>
+          <p class="post-user">Usuário associado: #{{ currentState.post.userId }}</p>
+        </article>
+      }
+    }
+  }
+</main>
