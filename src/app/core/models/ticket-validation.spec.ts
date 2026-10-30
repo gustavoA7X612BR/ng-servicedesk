@@ -24,7 +24,7 @@ describe('isTicket', () => {
         id: 'event-1',
         type: TicketHistoryEventType.Created,
         description: 'Ticket criado.',
-        author: 'Rafael Martins',
+        author: 'John Doe',
         createdAt: '2026-10-30T12:00:00.000Z',
       },
     ],

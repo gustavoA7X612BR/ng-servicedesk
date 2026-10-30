@@ -19,7 +19,7 @@ describe('createTicket', () => {
         category: TicketCategory.Hardware,
         priority: TicketPriority.High,
       },
-      'Rafael Martins',
+      'John Doe',
       '2026-10-30T12:00:00.000Z',
       idFactory,
     );
@@ -35,7 +35,7 @@ describe('createTicket', () => {
     expect(ticket.history[0]).toMatchObject({
       id: 'event-test',
       type: TicketHistoryEventType.Created,
-      author: 'Rafael Martins',
+      author: 'John Doe',
     });
   });
 });

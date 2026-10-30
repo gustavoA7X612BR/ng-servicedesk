@@ -51,22 +51,22 @@ describe('TicketDetailPage', () => {
     expect(service.changeStatus).toHaveBeenCalledWith(
       'ticket-2',
       TicketStatus.InProgress,
-      'Rafael Martins',
+      'John Doe',
     );
     expect(service.changePriority).toHaveBeenCalledWith(
       'ticket-2',
       TicketPriority.Critical,
-      'Rafael Martins',
+      'John Doe',
     );
     expect(service.assignAgent).toHaveBeenCalledWith(
       'ticket-2',
       'support-agent-01',
-      'Rafael Martins',
+      'John Doe',
     );
     expect(service.addComment).toHaveBeenCalledWith(
       'ticket-2',
       'Estou verificando.',
-      'Rafael Martins',
+      'John Doe',
     );
   });
 

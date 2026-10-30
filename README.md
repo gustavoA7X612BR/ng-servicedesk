@@ -19,6 +19,7 @@ Protótipo de central de atendimento feito com Angular e TypeScript. Permite abr
 - Angular 21, componentes standalone, Router e formulários reativos.
 - TypeScript em modo estrito e RxJS.
 - Vitest pelo executor de testes do Angular CLI.
+- Playwright Test para fluxos ponta a ponta em Chromium.
 - JSONPlaceholder como fonte externa somente de leitura para os dados de demonstração.
 
 Não foram adicionadas dependências para implementar o ServiceDesk.
@@ -62,7 +63,7 @@ Tickets e alterações ficam na chave versionada `ng-servicedesk.tickets` do `lo
 ## Limitações do protótipo
 
 - Não há backend, autenticação, autorização ou compartilhamento de tickets.
-- O perfil ativo é fixo e fictício: Rafael Martins, agente de suporte.
+- O perfil ativo é fixo e fictício: John Doe, agente de suporte.
 - Os registros importados são publicações demonstrativas, não chamados reais; alguns campos do ticket são valores fictícios criados para permitir a demonstração do fluxo.
 - A aplicação não envia notificações e não substitui um ServiceDesk de produção.
 
@@ -93,4 +94,15 @@ npm test -- --watch=false
 npm run build
 ```
 
-Os testes usam respostas e armazenamento simulados; não dependem da disponibilidade do JSONPlaceholder. A suíte cobre os modelos, validação e persistência, importação, serviço HTTP, navegação legada, filtros, ordenação, paginação e fluxos de tela. Não há configuração de testes end-to-end.
+Os testes unitários e de integração usam respostas e armazenamento simulados; não dependem da disponibilidade do JSONPlaceholder. A suíte cobre os modelos, validação e persistência, importação, serviço HTTP, navegação legada, filtros, ordenação, paginação e fluxos de tela. Os testes E2E usam Chromium e interceptam a resposta da API.
+
+### Testes ponta a ponta
+
+Instale o Chromium usado pelo Playwright uma vez e execute os fluxos no navegador:
+
+```bash
+npm run test:e2e:install
+npm run test:e2e
+```
+
+O Playwright inicia o servidor Angular durante a execução. Os testes cobrem abertura e validação, atualização e persistência do histórico, pesquisa/filtros/ordenação/paginação, fila de atendimento e importação idempotente. A resposta de `/posts` é interceptada dentro do teste, portanto os fluxos E2E não dependem de acesso ao JSONPlaceholder. Para acompanhar os passos interativamente, use `npm run test:e2e:ui`.

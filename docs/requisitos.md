@@ -69,7 +69,19 @@ Categorias: Hardware, Software, Rede, Acesso e permissões e Outros. Prioridades
 - **RNF-008.** Usar elementos semânticos, rótulos visíveis, estados acessíveis, foco visível e controles operáveis por teclado.
 - **RNF-009.** Distinguir status e prioridade visualmente e manter contraste e hierarquia de leitura.
 - **RNF-010.** Permitir testes automatizados sem depender de disponibilidade externa da API.
+- **RNF-011.** Validar em navegador os fluxos de abertura, consulta, atendimento, persistência local e importação demonstrativa.
 
-## 6. Limitações
+## 6. Testes ponta a ponta
+
+Os fluxos E2E usam Playwright Test com Chromium e iniciam o servidor Angular de desenvolvimento pela configuração do executor. As chamadas a `/posts` são interceptadas e respondem com fixtures controladas. Os testes não devem depender da internet nem alterar um serviço externo.
+
+Os cenários prioritários cobrem:
+
+- criação, validação, navegação aos detalhes, alterações de estado e restauração após recarga;
+- pesquisa, filtros combinados, ordenação, paginação e retorno à primeira página;
+- atribuição e atualização de tickets na fila;
+- importação repetida sem duplicação e preservação dos tickets locais.
+
+## 7. Limitações
 
 Este protótipo não implementa autenticação, autorização, backend, sincronização, notificações externas ou dados reais de suporte. Os agentes são fictícios e o perfil ativo é fixo. O JSONPlaceholder é somente a fonte de publicações demonstrativas; a persistência de tickets ocorre exclusivamente no navegador.

@@ -21,7 +21,7 @@ const defaults: NewTicketInput = {
 export function makeTestTicket(overrides: Partial<Ticket> = {}, id = 'ticket-1'): Ticket {
   const ticket = createTicket(
     defaults,
-    'Rafael Martins',
+    'John Doe',
     '2026-10-29T12:00:00.000Z',
     (prefix) => `${prefix}-1`,
   );
@@ -61,7 +61,7 @@ export function changeTicketStatus(ticket: Ticket, status: TicketStatus): Ticket
             ? TicketHistoryEventType.Resolved
             : TicketHistoryEventType.StatusChanged,
         description: `Status alterado para “${status}”.`,
-        author: 'Rafael Martins',
+        author: 'John Doe',
         createdAt,
       },
     ],

@@ -37,7 +37,7 @@ describe('TicketService', () => {
   }
 
   function createTicket(): Ticket {
-    return service.create(input, 'Rafael Martins');
+    return service.create(input, 'John Doe');
   }
 
   it('creates and persists tickets with an initial creation event', () => {
@@ -78,10 +78,10 @@ describe('TicketService', () => {
     setup();
     const ticket = createTicket();
 
-    service.changeStatus(ticket.id, TicketStatus.InProgress, 'Rafael Martins');
-    service.changePriority(ticket.id, TicketPriority.Critical, 'Rafael Martins');
-    service.assignAgent(ticket.id, 'support-agent-01', 'Rafael Martins');
-    service.addComment(ticket.id, '  Verificando o equipamento.  ', 'Rafael Martins');
+    service.changeStatus(ticket.id, TicketStatus.InProgress, 'John Doe');
+    service.changePriority(ticket.id, TicketPriority.Critical, 'John Doe');
+    service.assignAgent(ticket.id, 'support-agent-01', 'John Doe');
+    service.addComment(ticket.id, '  Verificando o equipamento.  ', 'John Doe');
 
     const updated = service.getById(ticket.id);
     expect(updated).toMatchObject({
@@ -104,11 +104,11 @@ describe('TicketService', () => {
     setup();
     const ticket = createTicket();
 
-    service.resolve(ticket.id, 'Rafael Martins');
+    service.resolve(ticket.id, 'John Doe');
     expect(service.getById(ticket.id)?.status).toBe(TicketStatus.Resolved);
     expect(service.getById(ticket.id)?.history.at(-1)?.type).toBe(TicketHistoryEventType.Resolved);
 
-    service.close(ticket.id, 'Rafael Martins');
+    service.close(ticket.id, 'John Doe');
     expect(service.getById(ticket.id)?.status).toBe(TicketStatus.Closed);
     expect(service.getById(ticket.id)?.history.at(-1)?.type).toBe(TicketHistoryEventType.Closed);
 

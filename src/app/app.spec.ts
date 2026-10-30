@@ -29,7 +29,7 @@ describe('App', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
 
-    expect(compiled.textContent).toContain('Rafael Martins');
+    expect(compiled.textContent).toContain('John Doe');
     expect(compiled.textContent).toContain('Agente de suporte');
     expect(compiled.textContent).toContain('Perfil demonstrativo');
   });

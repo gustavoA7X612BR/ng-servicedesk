@@ -35,7 +35,11 @@
     </label>
     <label
       >Prioridade
-      <select [ngModel]="priorityFilter()" (ngModelChange)="setPriority($event)">
+      <select
+        aria-label="Filtrar por prioridade"
+        [ngModel]="priorityFilter()"
+        (ngModelChange)="setPriority($event)"
+      >
         <option value="">Todas</option>
         @for (priority of priorities; track priority) {
           <option [value]="priority">{{ priority }}</option>

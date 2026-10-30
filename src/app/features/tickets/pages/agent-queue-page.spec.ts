@@ -34,12 +34,12 @@ describe('AgentQueuePage', () => {
     expect(service.assignAgent).toHaveBeenCalledWith(
       'unassigned',
       'support-agent-01',
-      'Rafael Martins',
+      'John Doe',
     );
     expect(service.changeStatus).toHaveBeenCalledWith(
       'unassigned',
       TicketStatus.InProgress,
-      'Rafael Martins',
+      'John Doe',
     );
     fixture.destroy();
   });
