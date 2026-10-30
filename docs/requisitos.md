@@ -1,97 +1,75 @@
-# ServiceDesk — Especificação de Requisitos Funcionais
+# ServiceDesk — Requisitos do protótipo
 
-**Versão:** 2.0  
-**Sistema:** ServiceDesk
+**Versão:** 3.0  
+**Sistema:** ServiceDesk demonstrativo
 
-## 1. Atores
+## 1. Atores e limites
 
-- **Solicitante:** usuário responsável por registrar uma solicitação de suporte.
-- **Agente de suporte:** usuário responsável por executar atividades de atendimento.
-- **Administrador:** usuário responsável por administrar a configuração do sistema.
+- **Solicitante:** registra solicitações de suporte.
+- **Agente de suporte:** consulta, organiza e atualiza tickets.
+- **Administrador:** ator fictício reservado para evolução futura.
 
-**Nota de escopo:** os atores são mantidos conforme a definição original. O MVP não implementará autenticação ou operações de escrita na API. As funcionalidades disponíveis serão restritas à consulta dos registros fornecidos pelo JSONPlaceholder.
+O protótipo não implementa autenticação ou autorização. A interface usa um perfil de agente demonstrativo fixo. Não existe backend; tickets e alterações ficam no armazenamento local do navegador.
 
 ## 2. Requisitos funcionais
 
-### 2.1. Consulta de chamados
+### 2.1. Abertura e consulta
 
-**RF-001.** O sistema deverá permitir ao agente de suporte consultar a lista de registros disponibilizados pela API.
+- **RF-001.** Permitir criar tickets com título, descrição, nome e e-mail do solicitante, categoria e prioridade.
+- **RF-002.** Validar campos obrigatórios e formato do e-mail, apresentar mensagens claras e levar o usuário aos detalhes após salvar.
+- **RF-003.** Permitir pesquisar tickets por título, descrição, solicitante e identificador.
+- **RF-004.** Permitir filtrar por status, prioridade e categoria em combinação.
+- **RF-005.** Permitir ordenar por data de criação ou prioridade e navegar entre páginas.
+- **RF-006.** Informar totais geral e filtrado, além de diferenciar lista vazia de pesquisa sem resultados.
+- **RF-007.** Exibir detalhes do ticket e seu histórico completo de eventos.
 
-- **RF-001.1.** O sistema deverá permitir ao agente de suporte pesquisar registros pelo título.
-- **RF-001.2.** O sistema deverá permitir ao agente de suporte ordenar a lista de registros pelo identificador.
-- **RF-001.3.** O sistema deverá permitir ao agente de suporte navegar entre as páginas da lista de registros.
-- **RF-001.4.** O sistema deverá informar ao usuário quando a consulta não retornar registros.
-- **RF-001.5.** O sistema deverá informar ao usuário quando ocorrer uma falha na consulta.
+### 2.2. Acompanhamento e atendimento
 
-**RF-002.** O sistema deverá permitir ao agente de suporte consultar um registro pelo seu identificador.
+- **RF-008.** Permitir alterar status e prioridade do ticket.
+- **RF-009.** Permitir atribuir ou remover o agente responsável.
+- **RF-010.** Permitir incluir comentários, resolver e fechar o ticket.
+- **RF-011.** Registrar criação e cada alteração em um histórico com tipo, descrição, autor e data.
+- **RF-012.** Disponibilizar fila com todos os tickets, tickets atribuídos ao agente ativo e tickets sem responsável.
+- **RF-013.** Permitir ao agente atribuir tickets a si e atualizar seu status pela fila.
+- **RF-014.** Apresentar no painel total de tickets, abertos, em atendimento, aguardando solicitante, resolvidos e críticos.
 
-### 2.2. Indicadores operacionais
+### 2.3. Dados demonstrativos
 
-**RF-003.** O sistema deverá permitir ao agente de suporte consultar a quantidade de registros disponibilizados pela API.
+- **RF-015.** Permitir importar publicações por `GET /posts` do JSONPlaceholder como tickets demonstrativos.
+- **RF-016.** Identificar a origem importada e evitar importar novamente uma referência já presente.
+- **RF-017.** Preservar tickets criados localmente durante importações.
+- **RF-018.** Manter a consulta de publicações em `/posts` e `/posts/:id` para compatibilidade com o fluxo demonstrativo anterior.
 
-- **RF-003.1.** O sistema deverá apresentar a quantidade de registros retornados pela consulta.
-- **RF-003.2.** O sistema deverá apresentar a quantidade de resultados correspondentes aos critérios de pesquisa aplicados, quando houver pesquisa.
+## 3. Modelo e regras de negócio
 
-### 2.3. Navegação e feedback
+O modelo `Ticket` possui identificador, título, descrição, solicitante, e-mail, categoria, prioridade, status, agente opcional, datas de criação e atualização, origem e histórico.
 
-**RF-004.** O sistema deverá permitir ao agente de suporte acessar a página de detalhes de um registro a partir de sua identificação na lista.
+Categorias: Hardware, Software, Rede, Acesso e permissões e Outros. Prioridades: Baixa, Média, Alta e Crítica. Status: Aberto, Em atendimento, Aguardando solicitante, Resolvido e Fechado.
 
-**RF-005.** O sistema deverá informar ao usuário quando a consulta de detalhes não encontrar um registro correspondente ao identificador informado.
+- **RN-001.** Novos tickets locais recebem status Aberto e um evento de criação.
+- **RN-002.** Toda alteração de atendimento atualiza `updatedAt` e registra um evento com autor e data.
+- **RN-003.** A ordenação opera sobre uma cópia da coleção para não modificar o estado mantido pelo serviço.
+- **RN-004.** Pesquisa, filtros, ordenação e paginação operam sobre os tickets carregados localmente; uma alteração dos critérios volta à primeira página.
+- **RN-005.** Na importação, `id` da publicação é guardado como referência externa, `title` como título, `body` como descrição e `userId` como referência do solicitante demonstrativo.
+- **RN-006.** Status, prioridade, categoria, responsável, e-mail fictício e datas gerados para demonstração não são descritos como dados fornecidos pelo JSONPlaceholder.
+- **RN-007.** Operações locais não usam POST, PUT, PATCH ou DELETE na API externa.
 
-**RF-006.** O sistema deverá informar ao usuário quando ocorrer uma falha na consulta de detalhes.
+## 4. Persistência e erros
 
-## 3. Regras de negócio
+- **RNF-001.** Persistir tickets em `localStorage` com envelope versionado.
+- **RNF-002.** Validar a estrutura recuperada antes de disponibilizá-la à aplicação.
+- **RNF-003.** Preservar valores corrompidos ou incompatíveis e bloquear gravações que poderiam sobrescrevê-los.
+- **RNF-004.** Tratar indisponibilidade do armazenamento e falhas HTTP com mensagens de interface.
+- **RNF-005.** O armazenamento é local ao navegador e não oferece sincronização entre dispositivos.
 
-**RN-001.** O identificador de cada registro deverá corresponder ao campo `id` disponibilizado pela API.
+## 5. Interface e acessibilidade
 
-**RN-002.** O título de cada registro deverá corresponder ao campo `title` disponibilizado pela API.
+- **RNF-006.** Implementar com Angular e TypeScript strict, sem backend próprio ou dependências de validação adicionais.
+- **RNF-007.** Disponibilizar navegação lateral, painel, lista, formulário, detalhes e fila em desktop e dispositivos móveis.
+- **RNF-008.** Usar elementos semânticos, rótulos visíveis, estados acessíveis, foco visível e controles operáveis por teclado.
+- **RNF-009.** Distinguir status e prioridade visualmente e manter contraste e hierarquia de leitura.
+- **RNF-010.** Permitir testes automatizados sem depender de disponibilidade externa da API.
 
-**RN-003.** A descrição apresentada nos detalhes de cada registro deverá corresponder ao campo `body` disponibilizado pela API.
+## 6. Limitações
 
-**RN-004.** O identificador do usuário associado a cada registro deverá corresponder ao campo `userId` disponibilizado pela API.
-
-**RN-005.** A pesquisa pelo título deverá considerar os registros carregados pela aplicação.
-
-**RN-006.** A ordenação deverá utilizar os valores do campo selecionado nos registros carregados.
-
-**RN-007.** A paginação deverá operar sobre o conjunto de registros definido para a listagem.
-
-**RN-008.** O sistema não deverá apresentar status, prioridade, categoria, responsável ou datas de abertura como dados fornecidos pela API quando esses campos não estiverem disponíveis na resposta.
-
-**RN-009.** O sistema deverá distinguir uma consulta concluída sem resultados de uma consulta que tenha falhado.
-
-## 4. Requisitos não funcionais
-
-**RNF-001.** O sistema deverá ser implementado com Angular e TypeScript.
-
-**RNF-002.** O sistema deverá utilizar o modo estrito do TypeScript.
-
-**RNF-003.** O sistema deverá disponibilizar uma interface responsiva para navegadores desktop e dispositivos móveis.
-
-**RNF-004.** O sistema deverá permitir a navegação por teclado nas funcionalidades operacionais.
-
-**RNF-005.** O sistema deverá apresentar uma indicação visual de carregamento durante uma consulta assíncrona em andamento.
-
-**RNF-006.** O sistema deverá tratar falhas HTTP sem interromper a execução da aplicação.
-
-**RNF-007.** O sistema deverá permitir a execução automatizada de testes unitários, de componentes e de integração.
-
-**RNF-008.** Os testes automatizados não deverão depender da disponibilidade de uma API externa.
-
-**RNF-009.** O repositório deverá conter instruções para instalação, execução e teste da aplicação.
-
-## 5. Restrições do MVP
-
-**RE-001.** O MVP não deverá exigir autenticação real para executar os fluxos de demonstração.
-
-**RE-002.** O MVP deverá utilizar dados fictícios para representar os atores do sistema.
-
-**RE-003.** O MVP deverá limitar as operações sobre os registros às funcionalidades de consulta, pesquisa, ordenação e paginação.
-
-**RE-004.** O MVP não deverá apresentar operações simuladas como operações persistidas em um servidor remoto.
-
-**RE-005.** O MVP não deverá implementar integração com serviços de notificação externos.
-
-**RE-006.** O MVP deverá utilizar o JSONPlaceholder como fonte externa dos registros consultados.
-
-**RE-007.** O MVP deverá tratar os registros da API como publicações utilizadas para demonstração, sem afirmar que representam chamados reais de suporte.
+Este protótipo não implementa autenticação, autorização, backend, sincronização, notificações externas ou dados reais de suporte. Os agentes são fictícios e o perfil ativo é fixo. O JSONPlaceholder é somente a fonte de publicações demonstrativas; a persistência de tickets ocorre exclusivamente no navegador.
