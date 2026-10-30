@@ -1,6 +1,6 @@
 <main class="posts-page">
   <header class="page-header">
-    <p class="eyebrow">ServiceDesk · demonstração</p>
+    <p class="eyebrow">Dados demonstrativos do JSONPlaceholder</p>
     <h1>Publicações</h1>
     <p class="intro">Consulte os registros de demonstração fornecidos pelo JSONPlaceholder.</p>
   </header>
@@ -32,8 +32,8 @@
   } @else if (posts().length === 0) {
     <p class="status" role="status">A consulta foi concluída, mas não retornou publicações.</p>
   } @else {
-    <p class="result-count" aria-live="polite">
-      {{ filteredPosts().length }} de {{ posts().length }} publicações
+    <p class="result-count" aria-live="polite" aria-atomic="true">
+      Registros recebidos da API: {{ posts().length }} · Resultados: {{ filteredPosts().length }}
     </p>
 
     @if (filteredPosts().length === 0) {
@@ -43,7 +43,12 @@
         @for (post of visiblePosts(); track post.id) {
           <li>
             <article class="post-card">
-              <p class="post-id">Publicação #{{ post.id }}</p>
+              <p class="post-id">
+                Publicação
+                <a [routerLink]="['/posts', post.id]" [attr.aria-label]="'Ver publicação ' + post.id">
+                  #{{ post.id }}
+                </a>
+              </p>
               <h2><a [routerLink]="['/posts', post.id]">{{ post.title }}</a></h2>
               <p class="post-body">{{ post.body }}</p>
               <p class="post-author">Usuário #{{ post.userId }}</p>

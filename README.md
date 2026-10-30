@@ -5,6 +5,7 @@ Aplicação de demonstração construída com Angular. Ela consulta publicaçõe
 ## Funcionalidades
 
 - Listagem de publicações com pesquisa por título, ordenação por ID e paginação local.
+- Perfil fictício de agente de suporte, sem autenticação.
 - Exibição dos detalhes de uma publicação pela rota `/posts/:id`.
 - Estados de carregamento, lista vazia, registro não encontrado e falha de consulta.
 - Validação em tempo de execução das respostas recebidas da API.
@@ -32,7 +33,7 @@ npm install
 npm start
 ```
 
-Abra [http://localhost:4200/](http://localhost:4200/). A rota inicial mostra a listagem. Selecione o título de uma publicação para abrir `/posts/:id`.
+Abra [http://localhost:4200/](http://localhost:4200/). A rota inicial mostra a listagem. Selecione o identificador ou o título de uma publicação para abrir `/posts/:id`.
 
 ## Testes e build
 
@@ -55,7 +56,8 @@ npm run build
 ```text
 src/app/
 ├── core/
-│   ├── models/                 # Contrato TypeScript da publicação
+│   ├── data/                   # Perfis fictícios usados na demonstração
+│   ├── models/                 # Contratos TypeScript
 │   └── services/               # Serviços transversais, quando necessários
 ├── features/
 │   └── tickets/
@@ -79,6 +81,8 @@ A aplicação consulta somente:
 Cada publicação usa os campos `userId` e `id` (números), `title` e `body` (strings). Respostas fora desse formato geram `InvalidPostPayloadError`; falhas HTTP permanecem erros HTTP, incluindo o status 404.
 
 A listagem carrega a coleção e aplica pesquisa, ordenação por ID e paginação no cliente. As publicações do JSONPlaceholder são fictícias. Embora o serviço aceite operações de escrita simuladas, este projeto não as utiliza e não apresenta alterações persistidas.
+
+O perfil exibido pela aplicação é um agente de suporte de demonstração. A lista local também contém perfis fictícios de solicitante e administrador; não há login nem troca de perfil.
 
 ## Limitações dos dados demonstrativos
 

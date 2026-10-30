@@ -29,7 +29,9 @@ describe('Posts routes', () => {
     const harness = await RouterTestingHarness.create();
     await harness.navigateByUrl('/', PostsListPage);
 
-    const postLink = harness.routeNativeElement?.querySelector('a[href="/posts/1"]') as HTMLAnchorElement;
+    const postLink = harness.routeNativeElement?.querySelector(
+      'a[aria-label="Ver publicação 1"]',
+    ) as HTMLAnchorElement;
     expect(postLink).toBeTruthy();
     postLink.click();
     await harness.fixture.whenStable();

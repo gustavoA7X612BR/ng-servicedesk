@@ -44,7 +44,9 @@ describe('PostsListPage', () => {
 
     const element = fixture.nativeElement as HTMLElement;
     expect(element.querySelectorAll('.post-card').length).toBe(10);
-    expect(element.querySelector('.result-count')?.textContent).toContain('12 de 12');
+    expect(element.querySelector('.result-count')?.textContent).toContain(
+      'Registros recebidos da API: 12 · Resultados: 12',
+    );
     expect(element.querySelector('.post-card h2')?.textContent).toContain('Angular fundamentals');
   });
 
@@ -63,7 +65,9 @@ describe('PostsListPage', () => {
 
     const element = fixture.nativeElement as HTMLElement;
     expect(element.querySelectorAll('.post-card').length).toBe(10);
-    expect(element.querySelector('.result-count')?.textContent).toContain('11 de 12');
+    expect(element.querySelector('.result-count')?.textContent).toContain(
+      'Registros recebidos da API: 12 · Resultados: 11',
+    );
     expect(element.querySelector('.pagination')?.textContent).toContain('Página 1 de 2');
     expect(element.textContent).toContain('Demo post 2');
   });
