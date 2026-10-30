@@ -1,0 +1,41 @@
+<section class="panel description-panel" aria-labelledby="description-title">
+  <div class="panel-heading">
+    <div>
+      <p class="eyebrow">Solicitação</p>
+      <h2 id="description-title">Descrição</h2>
+    </div>
+    <span class="status-badge" [attr.data-status]="ticket.status">{{ ticket.status }}</span>
+  </div>
+  <p class="description-text">{{ ticket.description }}</p>
+</section>
+
+<section class="panel history-panel" aria-labelledby="history-title">
+  <div class="panel-heading">
+    <div>
+      <p class="eyebrow">Acompanhamento</p>
+      <h2 id="history-title">Histórico de atividades</h2>
+    </div>
+    <span class="event-count">{{ ticket.history.length }} eventos</span>
+  </div>
+  @if (history.length) {
+    <ol class="timeline">
+      @for (event of history; track event.id) {
+        <li class="timeline-item" [attr.data-type]="event.type">
+          <span class="timeline-dot" aria-hidden="true"></span>
+          <div class="timeline-content">
+            <div class="event-heading">
+              <strong>{{ eventLabel(event.type) }}</strong>
+              <time [attr.datetime]="event.createdAt">{{
+                event.createdAt | date: 'dd/MM/yyyy HH:mm'
+              }}</time>
+            </div>
+            <p>{{ event.description }}</p>
+            <small>por {{ event.author }}</small>
+          </div>
+        </li>
+      }
+    </ol>
+  } @else {
+    <p class="muted">Este ticket ainda não possui eventos registrados.</p>
+  }
+</section>

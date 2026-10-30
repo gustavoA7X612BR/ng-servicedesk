@@ -1,0 +1,81 @@
+.panel {
+  padding: 1.25rem;
+  border: 1px solid #e0e7ee;
+  border-radius: 0.9rem;
+  background: #fff;
+}
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+h2 {
+  margin: 0;
+  color: #20384f;
+  font-size: 1.06rem;
+}
+.description-text {
+  margin: 1rem 0 0;
+  color: #394e63;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.timeline {
+  position: relative;
+  display: grid;
+  gap: 0;
+  margin: 1rem 0 0 0.4rem;
+  padding: 0;
+  list-style: none;
+}
+.timeline::before {
+  position: absolute;
+  top: 0.6rem;
+  bottom: 1rem;
+  left: 0.35rem;
+  width: 1px;
+  background: #dce5ed;
+  content: '';
+}
+.timeline-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1rem minmax(0, 1fr);
+  gap: 0.7rem;
+  padding: 0 0 1.15rem;
+}
+.timeline-dot {
+  z-index: 1;
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-top: 0.3rem;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #4c8dc4;
+  box-shadow: 0 0 0 1px #a8c5de;
+}
+.timeline-item[data-type='comment-added'] .timeline-dot {
+  background: #8c72c5;
+  box-shadow: 0 0 0 1px #c3b4e4;
+}
+.event-heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.4rem 1rem;
+  color: #314a60;
+  font-size: 0.87rem;
+}
+.event-heading time,
+.timeline-content small {
+  color: #7a8998;
+  font-size: 0.76rem;
+}
+.timeline-content p {
+  margin: 0.35rem 0;
+  color: #56697c;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}

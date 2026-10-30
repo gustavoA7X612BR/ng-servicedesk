@@ -42,6 +42,10 @@ describe('TicketDetailPage', () => {
     expect(harness.routeNativeElement?.querySelector('h1')?.textContent).toContain(
       'Segundo atendimento',
     );
+    expect(harness.routeNativeElement?.textContent).toContain('Histórico de atividades');
+    expect(harness.routeNativeElement?.textContent).toContain('Ticket criado');
+    expect(harness.routeNativeElement?.textContent).toContain('Dados do solicitante');
+    expect(harness.routeNativeElement?.textContent).toContain('Camila Nunes');
 
     secondPage.changeStatus(TicketStatus.InProgress);
     secondPage.changePriority(TicketPriority.Critical);

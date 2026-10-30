@@ -1,0 +1,86 @@
+<section class="panel actions-panel" aria-labelledby="actions-title">
+  <p class="eyebrow">Atendimento</p>
+  <h2 id="actions-title">Atualizar ticket</h2>
+  <label
+    >Status<select
+      [ngModel]="ticket.status"
+      (ngModelChange)="statusChange.emit($event)"
+      [disabled]="!!storageError"
+    >
+      @for (status of statuses; track status) {
+        <option [value]="status">{{ status }}</option>
+      }
+    </select></label
+  >
+  <label
+    >Prioridade<select
+      [ngModel]="ticket.priority"
+      (ngModelChange)="priorityChange.emit($event)"
+      [disabled]="!!storageError"
+    >
+      @for (priority of priorities; track priority) {
+        <option [value]="priority">{{ priority }}</option>
+      }
+    </select></label
+  >
+  <label
+    >Agente responsável<select
+      [ngModel]="ticket.assignedAgent ?? ''"
+      (ngModelChange)="agentChange.emit($event)"
+      [disabled]="!!storageError"
+    >
+      <option value="">Sem responsável</option>
+      @for (agent of agents; track agent.id) {
+        <option [value]="agent.id">{{ agent.displayName }}</option>
+      }
+    </select></label
+  >
+  <div class="quick-actions">
+    <button
+      class="button button-secondary"
+      type="button"
+      (click)="resolveTicket.emit()"
+      [disabled]="!!storageError || ticket.status === 'Resolvido'"
+    >
+      Marcar como resolvido</button
+    ><button
+      class="button button-quiet"
+      type="button"
+      (click)="closeTicket.emit()"
+      [disabled]="!!storageError || ticket.status === 'Fechado'"
+    >
+      Fechar ticket
+    </button>
+  </div>
+</section>
+
+<section class="panel info-panel" aria-labelledby="info-title">
+  <p class="eyebrow">Informações</p>
+  <h2 id="info-title">Dados do solicitante</h2>
+  <dl>
+    <div>
+      <dt>Nome</dt>
+      <dd>{{ requesterFor(ticket) }}</dd>
+    </div>
+    <div>
+      <dt>E-mail</dt>
+      <dd>{{ ticket.requesterEmail }}</dd>
+    </div>
+    <div>
+      <dt>Categoria</dt>
+      <dd>{{ ticket.category }}</dd>
+    </div>
+    <div>
+      <dt>Agente</dt>
+      <dd>{{ agentName(ticket.assignedAgent) }}</dd>
+    </div>
+    <div>
+      <dt>Criado em</dt>
+      <dd>{{ ticket.createdAt | date: 'dd/MM/yyyy HH:mm' }}</dd>
+    </div>
+    <div>
+      <dt>Atualizado em</dt>
+      <dd>{{ ticket.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</dd>
+    </div>
+  </dl>
+</section>

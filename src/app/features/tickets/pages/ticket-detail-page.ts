@@ -1,4 +1,3 @@
-import { DatePipe } from '@angular/common';
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -6,15 +5,16 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DEMO_ACTORS, ACTIVE_DEMO_ACTOR } from '../../../core/data/demo-actors';
 import {
   Ticket,
-  TicketHistoryEventType,
   TicketPriority,
   TicketStatus,
 } from '../../../core/models/ticket.model';
+import { TicketActivityPanel } from '../components/ticket-activity-panel/ticket-activity-panel';
+import { TicketManagementPanel } from '../components/ticket-management-panel/ticket-management-panel';
 import { TicketService } from '../services/ticket.service';
 
 @Component({
   selector: 'app-ticket-detail-page',
-  imports: [DatePipe, FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, TicketActivityPanel, TicketManagementPanel],
   templateUrl: './ticket-detail-page.html',
   styleUrl: './ticket-detail-page.scss',
 })
@@ -28,14 +28,11 @@ export class TicketDetailPage {
   readonly actionError = signal('');
   readonly comment = signal('');
   readonly commentError = signal('');
-  readonly statuses = Object.values(TicketStatus);
-  readonly priorities = Object.values(TicketPriority);
   readonly agents = DEMO_ACTORS.filter((actor) => actor.role === 'Agente de suporte');
   readonly activeActor = ACTIVE_DEMO_ACTOR;
   readonly ticket = computed(() =>
     this.ticketService.tickets().find((item) => item.id === this.ticketId()),
   );
-  readonly history = computed(() => [...(this.ticket()?.history ?? [])].reverse());
   readonly storageError = this.ticketService.storageError;
 
   constructor() {
@@ -46,19 +43,6 @@ export class TicketDetailPage {
     this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       this.createdNotice.set(params.get('created') === '1');
     });
-  }
-
-  requesterFor(ticket: Ticket): string {
-    return ticket.origin === 'jsonplaceholder'
-      ? `Usuário demonstrativo ${ticket.requester}`
-      : ticket.requester;
-  }
-
-  agentName(agentId?: string): string {
-    return (
-      this.agents.find((agent) => agent.id === agentId)?.displayName ??
-      (agentId ? 'Agente demonstrativo' : 'Não atribuído')
-    );
   }
 
   changeStatus(value: string): void {
@@ -118,20 +102,6 @@ export class TicketDetailPage {
     } catch (error) {
       this.actionError.set(this.errorMessage(error));
     }
-  }
-
-  eventLabel(type: TicketHistoryEventType): string {
-    const labels: Record<TicketHistoryEventType, string> = {
-      [TicketHistoryEventType.Created]: 'Ticket criado',
-      [TicketHistoryEventType.Imported]: 'Importação demonstrativa',
-      [TicketHistoryEventType.StatusChanged]: 'Status atualizado',
-      [TicketHistoryEventType.PriorityChanged]: 'Prioridade atualizada',
-      [TicketHistoryEventType.AgentAssigned]: 'Responsável atualizado',
-      [TicketHistoryEventType.CommentAdded]: 'Comentário',
-      [TicketHistoryEventType.Resolved]: 'Ticket resolvido',
-      [TicketHistoryEventType.Closed]: 'Ticket fechado',
-    };
-    return labels[type];
   }
 
   private perform(action: () => Ticket): void {
