@@ -41,15 +41,23 @@ export class TicketService {
   importDemonstrationTickets(importedTickets: Ticket[]): number {
     const existingReferences = new Set(
       this.tickets()
-        .filter((ticket) => ticket.origin === TicketOrigin.JsonPlaceholder && ticket.externalPostId !== undefined)
+        .filter(
+          (ticket) =>
+            ticket.origin === TicketOrigin.JsonPlaceholder && ticket.externalPostId !== undefined,
+        )
         .map((ticket) => ticket.externalPostId),
     );
-    const additions = importedTickets.filter(
-      (ticket) =>
-        ticket.origin === TicketOrigin.JsonPlaceholder &&
-        ticket.externalPostId !== undefined &&
-        !existingReferences.has(ticket.externalPostId),
-    );
+    const additions = importedTickets.filter((ticket) => {
+      if (
+        ticket.origin !== TicketOrigin.JsonPlaceholder ||
+        ticket.externalPostId === undefined ||
+        existingReferences.has(ticket.externalPostId)
+      ) {
+        return false;
+      }
+      existingReferences.add(ticket.externalPostId);
+      return true;
+    });
     if (additions.length === 0) return 0;
 
     this.commit([...additions, ...this.tickets()]);
@@ -63,10 +71,16 @@ export class TicketService {
         : status === TicketStatus.Closed
           ? TicketHistoryEventType.Closed
           : TicketHistoryEventType.StatusChanged;
-    return this.update(ticketId, author, `Status alterado para “${status}”.`, eventType, (ticket) => ({
-      ...ticket,
-      status,
-    }));
+    return this.update(
+      ticketId,
+      author,
+      `Status alterado para “${status}”.`,
+      eventType,
+      (ticket) => ({
+        ...ticket,
+        status,
+      }),
+    );
   }
 
   changePriority(ticketId: string, priority: TicketPriority, author: string): Ticket {
@@ -80,7 +94,9 @@ export class TicketService {
   }
 
   assignAgent(ticketId: string, agentId: string | null, author: string): Ticket {
-    const description = agentId ? `Ticket atribuído ao agente ${agentId}.` : 'Agente removido do ticket.';
+    const description = agentId
+      ? `Ticket atribuído ao agente ${agentId}.`
+      : 'Agente removido do ticket.';
     return this.update(
       ticketId,
       author,
@@ -129,7 +145,9 @@ export class TicketService {
   ): Ticket {
     const existing = this.getById(ticketId);
     if (!existing) throw new Error('Ticket não encontrado.');
-    const updatedAt = new Date(Math.max(Date.now(), Date.parse(existing.updatedAt) + 1)).toISOString();
+    const updatedAt = new Date(
+      Math.max(Date.now(), Date.parse(existing.updatedAt) + 1),
+    ).toISOString();
     const event = createHistoryEvent(eventType, description, author, updatedAt);
     const updated: Ticket = {
       ...apply(existing),
@@ -143,7 +161,10 @@ export class TicketService {
 
   private commit(tickets: TicketList): void {
     if (this.storageError()) {
-      throw new TicketStorageError('unavailable', this.storageError() ?? 'Armazenamento indisponível.');
+      throw new TicketStorageError(
+        'unavailable',
+        this.storageError() ?? 'Armazenamento indisponível.',
+      );
     }
 
     try {

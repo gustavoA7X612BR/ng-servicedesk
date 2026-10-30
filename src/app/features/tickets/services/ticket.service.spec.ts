@@ -132,4 +132,24 @@ describe('TicketService', () => {
     expect(service.getById(localTicket.id)).toEqual(localTicket);
     expect(service.getById(importedTicket.id)?.title).toBe('Post demonstrativo');
   });
+
+  it('deduplicates repeated references within the same import batch', () => {
+    setup();
+    const ticket = createTicket();
+    const importedTicket = {
+      ...ticket,
+      id: 'demo-post-8',
+      externalPostId: 8,
+      origin: TicketOrigin.JsonPlaceholder,
+    };
+
+    expect(
+      service.importDemonstrationTickets([
+        importedTicket,
+        { ...importedTicket, title: 'Duplicado' },
+      ]),
+    ).toBe(1);
+    expect(service.tickets()).toHaveLength(2);
+    expect(service.tickets().filter((item) => item.externalPostId === 8)).toHaveLength(1);
+  });
 });
