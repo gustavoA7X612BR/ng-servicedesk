@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 
 import { Post, PostList } from '../../../core/models/json-placeholder-post.model';
-import { PostApiService } from './post-api.service';
+import { InvalidPostPayloadError, PostApiService } from './post-api.service';
 
 describe('PostApiService', () => {
   let service: PostApiService;
@@ -77,5 +77,47 @@ describe('PostApiService', () => {
     request.flush('Post not found', { status: 404, statusText: 'Not Found' });
 
     expect(actualError?.status).toBe(404);
+  });
+
+  it('rejects a list response that is not an array', () => {
+    let actualError: unknown;
+
+    service.getPosts().subscribe({ error: (error: unknown) => (actualError = error) });
+    httpTestingController.expectOne(endpoint).flush({ posts: [samplePost] });
+
+    expect(actualError).toBeInstanceOf(InvalidPostPayloadError);
+  });
+
+  it('rejects a post without a title', () => {
+    let actualError: unknown;
+    const { title: _title, ...incompletePost } = samplePost;
+
+    service.getPosts().subscribe({ error: (error: unknown) => (actualError = error) });
+    httpTestingController.expectOne(endpoint).flush([incompletePost]);
+
+    expect(actualError).toBeInstanceOf(InvalidPostPayloadError);
+    expect((actualError as Error).message).toContain('title');
+  });
+
+  it('rejects a post field with the wrong type', () => {
+    let actualError: unknown;
+    const invalidPost = { ...samplePost, body: ['not', 'a', 'string'] };
+
+    service.getPosts().subscribe({ error: (error: unknown) => (actualError = error) });
+    httpTestingController.expectOne(endpoint).flush([invalidPost]);
+
+    expect(actualError).toBeInstanceOf(InvalidPostPayloadError);
+    expect((actualError as Error).message).toContain('body');
+  });
+
+  it('rejects an incomplete individual post response', () => {
+    let actualError: unknown;
+    const incompletePost = { id: samplePost.id, title: samplePost.title, body: samplePost.body };
+
+    service.getPostById(samplePost.id).subscribe({ error: (error: unknown) => (actualError = error) });
+    httpTestingController.expectOne(`${endpoint}/${samplePost.id}`).flush(incompletePost);
+
+    expect(actualError).toBeInstanceOf(InvalidPostPayloadError);
+    expect((actualError as Error).message).toContain('userId');
   });
 });
