@@ -1,0 +1,132 @@
+<section class="page form-page" aria-labelledby="form-title">
+  <a class="back-link" routerLink="/tickets">← Voltar para tickets</a>
+  <header class="page-heading">
+    <p class="eyebrow">Nova solicitação</p>
+    <h1 id="form-title">Abrir ticket</h1>
+    <p class="muted">Descreva o que aconteceu para que a equipe possa ajudar.</p>
+  </header>
+  @if (storageError()) {
+    <div class="notice notice-error" role="alert">
+      O armazenamento está indisponível. O formulário não pode ser salvo. {{ storageError() }}
+    </div>
+  }
+  @if (submitError()) {
+    <div class="notice notice-error" role="alert">{{ submitError() }}</div>
+  }
+
+  <form class="form-card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="form-section-heading">
+      <span class="step-number">1</span>
+      <div>
+        <h2>Sobre a solicitação</h2>
+        <p>Informe o assunto e os detalhes do problema.</p>
+      </div>
+    </div>
+    <div class="field">
+      <label for="ticket-title">Título <span aria-hidden="true">*</span></label>
+      <input
+        id="ticket-title"
+        type="text"
+        formControlName="title"
+        maxlength="120"
+        autocomplete="off"
+        [attr.aria-invalid]="controls.title.touched && controls.title.invalid"
+        aria-describedby="title-help title-error"
+      />
+      <small id="title-help">Resuma o problema em poucas palavras.</small>
+      @if (controls.title.touched && controls.title.hasError('required')) {
+        <span id="title-error" class="field-error">Informe um título.</span>
+      } @else if (controls.title.touched && controls.title.hasError('maxlength')) {
+        <span id="title-error" class="field-error">O título deve ter até 120 caracteres.</span>
+      }
+    </div>
+    <div class="field">
+      <label for="ticket-description">Descrição <span aria-hidden="true">*</span></label>
+      <textarea
+        id="ticket-description"
+        rows="6"
+        formControlName="description"
+        maxlength="5000"
+        [attr.aria-invalid]="controls.description.touched && controls.description.invalid"
+        aria-describedby="description-help description-error"
+      ></textarea>
+      <small id="description-help"
+        >Inclua os passos realizados e qualquer detalhe que possa ajudar.</small
+      >
+      @if (controls.description.touched && controls.description.hasError('required')) {
+        <span id="description-error" class="field-error">Informe os detalhes da solicitação.</span>
+      } @else if (controls.description.touched && controls.description.hasError('maxlength')) {
+        <span id="description-error" class="field-error"
+          >A descrição deve ter até 5.000 caracteres.</span
+        >
+      }
+    </div>
+
+    <div class="form-section-heading second-section">
+      <span class="step-number">2</span>
+      <div>
+        <h2>Solicitante e classificação</h2>
+        <p>Como podemos identificar e direcionar a solicitação?</p>
+      </div>
+    </div>
+    <div class="field-grid">
+      <div class="field">
+        <label for="requester-name">Nome do solicitante <span aria-hidden="true">*</span></label>
+        <input
+          id="requester-name"
+          type="text"
+          formControlName="requester"
+          autocomplete="name"
+          [attr.aria-invalid]="controls.requester.touched && controls.requester.invalid"
+          aria-describedby="requester-error"
+        />
+        @if (controls.requester.touched && controls.requester.invalid) {
+          <span id="requester-error" class="field-error">Informe o nome do solicitante.</span>
+        }
+      </div>
+      <div class="field">
+        <label for="requester-email">E-mail <span aria-hidden="true">*</span></label>
+        <input
+          id="requester-email"
+          type="email"
+          formControlName="requesterEmail"
+          autocomplete="email"
+          [attr.aria-invalid]="controls.requesterEmail.touched && controls.requesterEmail.invalid"
+          aria-describedby="email-error"
+        />
+        @if (controls.requesterEmail.touched && controls.requesterEmail.hasError('required')) {
+          <span id="email-error" class="field-error">Informe o e-mail do solicitante.</span>
+        } @else if (controls.requesterEmail.touched && controls.requesterEmail.hasError('email')) {
+          <span id="email-error" class="field-error">Informe um endereço de e-mail válido.</span>
+        }
+      </div>
+      <div class="field">
+        <label for="ticket-category">Categoria <span aria-hidden="true">*</span></label>
+        <select id="ticket-category" formControlName="category">
+          @for (category of categories; track category) {
+            <option [value]="category">{{ category }}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <label for="ticket-priority">Prioridade <span aria-hidden="true">*</span></label>
+        <select id="ticket-priority" formControlName="priority">
+          @for (priority of priorities; track priority) {
+            <option [value]="priority">{{ priority }}</option>
+          }
+        </select>
+        <small>Você poderá ajustar a prioridade durante o atendimento.</small>
+      </div>
+    </div>
+    <div class="form-actions">
+      <a class="button button-secondary" routerLink="/tickets">Cancelar</a
+      ><button
+        class="button button-primary"
+        type="submit"
+        [disabled]="submitting() || !!storageError()"
+      >
+        {{ submitting() ? 'Salvando…' : 'Criar ticket' }}
+      </button>
+    </div>
+  </form>
+</section>

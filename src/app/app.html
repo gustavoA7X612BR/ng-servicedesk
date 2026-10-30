@@ -1,9 +1,29 @@
-<header class="app-header">
-  <a class="brand" routerLink="/" aria-label="ServiceDesk, página inicial">ServiceDesk</a>
-  <section class="actor-context" aria-label="Perfil fictício ativo">
-    <span class="actor-name">{{ demoActor.displayName }}</span>
-    <span>{{ demoActor.role }} · demonstração</span>
-  </section>
-</header>
+<div class="app-shell">
+  <aside class="sidebar" aria-label="Navegação principal">
+    <a class="brand" routerLink="/dashboard" aria-label="ServiceDesk, painel inicial"
+      >ServiceDesk</a
+    >
+    <nav class="main-nav">
+      <a
+        routerLink="/dashboard"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        >Painel</a
+      >
+      <a routerLink="/tickets" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+        >Tickets</a
+      >
+      <a routerLink="/tickets/new" routerLinkActive="active">Abrir ticket</a>
+      <a routerLink="/service" routerLinkActive="active">Atendimento</a>
+    </nav>
+    <section class="actor-context" aria-label="Perfil fictício ativo">
+      <span class="actor-label">Perfil demonstrativo</span>
+      <span class="actor-name">{{ demoActor.displayName }}</span>
+      <span>{{ demoActor.role }}</span>
+    </section>
+  </aside>
 
-<router-outlet />
+  <main class="workspace">
+    <router-outlet />
+  </main>
+</div>

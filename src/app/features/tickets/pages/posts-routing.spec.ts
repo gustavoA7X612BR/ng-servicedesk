@@ -20,14 +20,17 @@ describe('Posts routes', () => {
     TestBed.configureTestingModule({
       providers: [
         provideRouter(routes),
-        { provide: PostApiService, useValue: { getPosts: () => of([post]), getPostById: () => of(post) } },
+        {
+          provide: PostApiService,
+          useValue: { getPosts: () => of([post]), getPostById: () => of(post) },
+        },
       ],
     });
   });
 
   it('navigates from a post title in the list to its details page', async () => {
     const harness = await RouterTestingHarness.create();
-    await harness.navigateByUrl('/', PostsListPage);
+    await harness.navigateByUrl('/posts', PostsListPage);
 
     const postLink = harness.routeNativeElement?.querySelector(
       'a[aria-label="Ver publicação 1"]',

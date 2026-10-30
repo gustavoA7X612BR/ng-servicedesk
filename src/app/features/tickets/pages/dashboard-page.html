@@ -1,0 +1,96 @@
+<section class="page dashboard-page" aria-labelledby="dashboard-title">
+  <header class="page-heading">
+    <div>
+      <p class="eyebrow">Visão geral</p>
+      <h1 id="dashboard-title">Painel de atendimento</h1>
+      <p class="muted">Acompanhe o volume e a situação dos tickets registrados neste navegador.</p>
+    </div>
+    <a class="button button-primary" routerLink="/tickets/new">+ Abrir ticket</a>
+  </header>
+
+  @if (storageError()) {
+    <div class="notice notice-error" role="alert">
+      O armazenamento local não pôde ser lido. Seus dados foram preservados. {{ storageError() }}
+    </div>
+  }
+
+  <div class="metric-grid" aria-label="Indicadores de atendimento">
+    @for (metric of metrics(); track metric.label) {
+      <article class="metric-card" [class]="'metric-card tone-' + metric.tone">
+        <span>{{ metric.label }}</span>
+        <strong>{{ metric.value }}</strong>
+      </article>
+    }
+  </div>
+
+  <div class="dashboard-columns">
+    <section class="panel welcome-panel" aria-labelledby="welcome-title">
+      <div class="panel-icon" aria-hidden="true">◎</div>
+      <div>
+        <h2 id="welcome-title">Central de atendimento</h2>
+        <p>
+          Registre solicitações, acompanhe mudanças e mantenha o histórico de cada atendimento em um
+          só lugar.
+        </p>
+        <div class="action-row">
+          <a class="button button-primary" routerLink="/tickets/new">Registrar solicitação</a>
+          <a class="button button-secondary" routerLink="/tickets">Consultar tickets</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel import-panel" aria-labelledby="import-title">
+      <p class="eyebrow">Dados para demonstração</p>
+      <h2 id="import-title">JSONPlaceholder</h2>
+      <p>
+        Importe publicações públicas como tickets fictícios. Os dados de origem ficam identificados
+        e não substituem tickets locais.
+      </p>
+      <button
+        class="button button-secondary"
+        type="button"
+        [disabled]="importing() || !!storageError()"
+        (click)="importDemonstrations()"
+      >
+        {{ importing() ? 'Carregando…' : 'Importar exemplos' }}
+      </button>
+      @if (importMessage()) {
+        <p class="feedback success" role="status">{{ importMessage() }}</p>
+      }
+      @if (importError()) {
+        <p class="feedback error" role="alert">{{ importError() }}</p>
+      }
+    </section>
+  </div>
+
+  <section class="panel recent-panel" aria-labelledby="recent-title">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">Acompanhamento</p>
+        <h2 id="recent-title">Tickets recentes</h2>
+      </div>
+      <a routerLink="/tickets">Ver todos <span aria-hidden="true">→</span></a>
+    </div>
+    @if (tickets().length === 0) {
+      <p class="empty-state">
+        Ainda não há tickets. Abra uma solicitação ou importe dados demonstrativos.
+      </p>
+    } @else {
+      <ul class="recent-list">
+        @for (ticket of tickets().slice(0, 5); track ticket.id) {
+          <li>
+            <a [routerLink]="['/tickets', ticket.id]">
+              <span class="ticket-summary"
+                ><strong>{{ ticket.title }}</strong
+                ><small>#{{ ticket.id }} · {{ ticket.requester }}</small></span
+              >
+              <span class="status-badge" [attr.data-status]="ticket.status">{{
+                ticket.status
+              }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</section>

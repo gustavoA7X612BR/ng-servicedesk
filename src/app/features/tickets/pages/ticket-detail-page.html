@@ -1,0 +1,207 @@
+<section class="page detail-page" aria-labelledby="ticket-title">
+  <a class="back-link" routerLink="/tickets">← Voltar para tickets</a>
+  @if (storageError()) {
+    <div class="notice notice-error" role="alert">
+      O armazenamento local está indisponível; as alterações estão bloqueadas. {{ storageError() }}
+    </div>
+  }
+  @if (createdNotice()) {
+    <div class="notice notice-success" role="status">Ticket criado e salvo neste navegador.</div>
+  }
+  @if (actionError()) {
+    <div class="notice notice-error" role="alert">{{ actionError() }}</div>
+  }
+
+  @if (!ticket()) {
+    <section class="not-found panel">
+      <span class="not-found-icon" aria-hidden="true">?</span>
+      <h1 id="ticket-title">Ticket não encontrado</h1>
+      <p>O identificador informado não corresponde a um ticket salvo neste navegador.</p>
+      <a class="button button-primary" routerLink="/tickets">Ir para a lista de tickets</a>
+    </section>
+  } @else {
+    <header class="detail-heading">
+      <div class="title-block">
+        <div class="title-meta">
+          <span class="ticket-number">#{{ ticket()!.id }}</span>
+          @if (ticket()!.origin === 'jsonplaceholder') {
+            <span class="source-tag"
+              >Dado demonstrativo · publicação {{ ticket()!.externalPostId }}</span
+            >
+          }
+        </div>
+        <h1 id="ticket-title">{{ ticket()!.title }}</h1>
+      </div>
+      <div class="heading-actions">
+        <a class="button button-secondary" routerLink="/tickets">Voltar à lista</a
+        ><button class="button button-quiet danger-action" type="button" (click)="deleteTicket()">
+          Excluir
+        </button>
+      </div>
+    </header>
+
+    <div class="detail-grid">
+      <main class="main-column">
+        <section class="panel description-panel" aria-labelledby="description-title">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Solicitação</p>
+              <h2 id="description-title">Descrição</h2>
+            </div>
+            <span class="status-badge" [attr.data-status]="ticket()!.status">{{
+              ticket()!.status
+            }}</span>
+          </div>
+          <p class="description-text">{{ ticket()!.description }}</p>
+        </section>
+
+        <section class="panel history-panel" aria-labelledby="history-title">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Acompanhamento</p>
+              <h2 id="history-title">Histórico de atividades</h2>
+            </div>
+            <span class="event-count">{{ ticket()!.history.length }} eventos</span>
+          </div>
+          @if (history().length) {
+            <ol class="timeline">
+              @for (event of history(); track event.id) {
+                <li class="timeline-item" [attr.data-type]="event.type">
+                  <span class="timeline-dot" aria-hidden="true"></span>
+                  <div class="timeline-content">
+                    <div class="event-heading">
+                      <strong>{{ eventLabel(event.type) }}</strong
+                      ><time [attr.datetime]="event.createdAt">{{
+                        event.createdAt | date: 'dd/MM/yyyy HH:mm'
+                      }}</time>
+                    </div>
+                    <p>{{ event.description }}</p>
+                    <small>por {{ event.author }}</small>
+                  </div>
+                </li>
+              }
+            </ol>
+          } @else {
+            <p class="muted">Este ticket ainda não possui eventos registrados.</p>
+          }
+        </section>
+
+        <section class="panel comment-panel" aria-labelledby="comment-title">
+          <p class="eyebrow">Atualização</p>
+          <h2 id="comment-title">Adicionar comentário</h2>
+          <label class="sr-only" for="ticket-comment">Comentário</label
+          ><textarea
+            id="ticket-comment"
+            rows="4"
+            [ngModel]="comment()"
+            (ngModelChange)="comment.set($event)"
+            placeholder="Registre uma informação para o histórico do atendimento"
+          ></textarea>
+          @if (commentError()) {
+            <p class="field-error" role="alert">{{ commentError() }}</p>
+          }
+          <div class="comment-actions">
+            <span>Comentário registrado como {{ activeActor.displayName }}</span
+            ><button
+              class="button button-primary"
+              type="button"
+              (click)="addComment()"
+              [disabled]="!!storageError()"
+            >
+              Adicionar comentário
+            </button>
+          </div>
+        </section>
+      </main>
+
+      <aside class="side-column" aria-label="Dados e ações do ticket">
+        <section class="panel actions-panel" aria-labelledby="actions-title">
+          <p class="eyebrow">Atendimento</p>
+          <h2 id="actions-title">Atualizar ticket</h2>
+          <label
+            >Status<select
+              [ngModel]="ticket()!.status"
+              (ngModelChange)="changeStatus($event)"
+              [disabled]="!!storageError()"
+            >
+              @for (status of statuses; track status) {
+                <option [value]="status">{{ status }}</option>
+              }
+            </select></label
+          >
+          <label
+            >Prioridade<select
+              [ngModel]="ticket()!.priority"
+              (ngModelChange)="changePriority($event)"
+              [disabled]="!!storageError()"
+            >
+              @for (priority of priorities; track priority) {
+                <option [value]="priority">{{ priority }}</option>
+              }
+            </select></label
+          >
+          <label
+            >Agente responsável<select
+              [ngModel]="ticket()!.assignedAgent ?? ''"
+              (ngModelChange)="assignAgent($event)"
+              [disabled]="!!storageError()"
+            >
+              <option value="">Sem responsável</option>
+              @for (agent of agents; track agent.id) {
+                <option [value]="agent.id">{{ agent.displayName }}</option>
+              }
+            </select></label
+          >
+          <div class="quick-actions">
+            <button
+              class="button button-secondary"
+              type="button"
+              (click)="resolve()"
+              [disabled]="!!storageError() || ticket()!.status === 'Resolvido'"
+            >
+              Marcar como resolvido</button
+            ><button
+              class="button button-quiet"
+              type="button"
+              (click)="close()"
+              [disabled]="!!storageError() || ticket()!.status === 'Fechado'"
+            >
+              Fechar ticket
+            </button>
+          </div>
+        </section>
+
+        <section class="panel info-panel" aria-labelledby="info-title">
+          <p class="eyebrow">Informações</p>
+          <h2 id="info-title">Dados do solicitante</h2>
+          <dl>
+            <div>
+              <dt>Nome</dt>
+              <dd>{{ requesterFor(ticket()!) }}</dd>
+            </div>
+            <div>
+              <dt>E-mail</dt>
+              <dd>{{ ticket()!.requesterEmail }}</dd>
+            </div>
+            <div>
+              <dt>Categoria</dt>
+              <dd>{{ ticket()!.category }}</dd>
+            </div>
+            <div>
+              <dt>Agente</dt>
+              <dd>{{ agentName(ticket()!.assignedAgent) }}</dd>
+            </div>
+            <div>
+              <dt>Criado em</dt>
+              <dd>{{ ticket()!.createdAt | date: 'dd/MM/yyyy HH:mm' }}</dd>
+            </div>
+            <div>
+              <dt>Atualizado em</dt>
+              <dd>{{ ticket()!.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</dd>
+            </div>
+          </dl>
+        </section>
+      </aside>
+    </div>
+  }
+</section>

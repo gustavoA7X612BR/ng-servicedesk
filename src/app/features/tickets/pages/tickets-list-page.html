@@ -1,0 +1,154 @@
+<section class="page" aria-labelledby="tickets-title">
+  <header class="page-heading">
+    <div>
+      <p class="eyebrow">Central de atendimento</p>
+      <h1 id="tickets-title">Tickets</h1>
+      <p class="muted">Pesquise, filtre e acompanhe as solicitações registradas.</p>
+    </div>
+    <a class="button button-primary" routerLink="/tickets/new">+ Abrir ticket</a>
+  </header>
+
+  @if (storageError()) {
+    <div class="notice notice-error" role="alert">
+      Não foi possível acessar os tickets salvos. {{ storageError() }}
+    </div>
+  }
+
+  <section class="filter-panel" aria-label="Pesquisa e filtros">
+    <label class="search-field"
+      >Pesquisar
+      <input
+        type="search"
+        [ngModel]="search()"
+        (ngModelChange)="setSearch($event)"
+        placeholder="Título, descrição, solicitante ou ID"
+      />
+    </label>
+    <label
+      >Status
+      <select [ngModel]="statusFilter()" (ngModelChange)="setStatus($event)">
+        <option value="">Todos</option>
+        @for (status of statuses; track status) {
+          <option [value]="status">{{ status }}</option>
+        }
+      </select>
+    </label>
+    <label
+      >Prioridade
+      <select [ngModel]="priorityFilter()" (ngModelChange)="setPriority($event)">
+        <option value="">Todas</option>
+        @for (priority of priorities; track priority) {
+          <option [value]="priority">{{ priority }}</option>
+        }
+      </select>
+    </label>
+    <label
+      >Categoria
+      <select [ngModel]="categoryFilter()" (ngModelChange)="setCategory($event)">
+        <option value="">Todas</option>
+        @for (category of categories; track category) {
+          <option [value]="category">{{ category }}</option>
+        }
+      </select>
+    </label>
+    <label
+      >Ordenar por
+      <select [ngModel]="sortBy()" (ngModelChange)="setSort($event)">
+        <option value="newest">Mais recentes</option>
+        <option value="oldest">Mais antigos</option>
+        <option value="priority">Maior prioridade</option>
+      </select>
+    </label>
+    <button class="button button-quiet clear-button" type="button" (click)="clearFilters()">
+      Limpar filtros
+    </button>
+  </section>
+
+  <div class="results-summary" aria-live="polite">
+    <span
+      ><strong>{{ filteredTickets().length }}</strong> de {{ tickets().length }} tickets</span
+    >
+    @if (search() || statusFilter() || priorityFilter() || categoryFilter()) {
+      <span>· filtros aplicados</span>
+    }
+  </div>
+
+  @if (tickets().length === 0) {
+    <section class="empty-panel">
+      <div class="empty-icon" aria-hidden="true">▤</div>
+      <h2>Nenhum ticket por aqui</h2>
+      <p>Abra uma solicitação para começar ou importe dados demonstrativos pelo painel.</p>
+      <a class="button button-primary" routerLink="/tickets/new">Abrir primeiro ticket</a>
+    </section>
+  } @else if (filteredTickets().length === 0) {
+    <section class="empty-panel">
+      <div class="empty-icon" aria-hidden="true">⌕</div>
+      <h2>Nenhum resultado encontrado</h2>
+      <p>Experimente ajustar os termos da pesquisa ou os filtros selecionados.</p>
+      <button class="button button-secondary" type="button" (click)="clearFilters()">
+        Limpar filtros
+      </button>
+    </section>
+  } @else {
+    <div class="ticket-table-wrap">
+      <table>
+        <caption class="sr-only">
+          Lista de tickets;
+          {{
+            filteredTickets().length
+          }}
+          resultado(s)
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Solicitação</th>
+            <th scope="col">Solicitante</th>
+            <th scope="col">Categoria</th>
+            <th scope="col">Prioridade</th>
+            <th scope="col">Status</th>
+            <th scope="col">Atualizado</th>
+            <th scope="col"><span class="sr-only">Ações</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (ticket of visibleTickets(); track ticket.id) {
+            <tr>
+              <td>
+                <a class="ticket-title" [routerLink]="['/tickets', ticket.id]">{{ ticket.title }}</a
+                ><small
+                  >#{{ ticket.id }}
+                  @if (ticket.origin === 'jsonplaceholder') {
+                    <span class="demo-tag">Demonstração</span>
+                  }
+                </small>
+              </td>
+              <td>{{ ticket.requester }}</td>
+              <td>{{ ticket.category }}</td>
+              <td>
+                <span class="priority-badge" [attr.data-priority]="priorityKey(ticket.priority)">{{
+                  ticket.priority
+                }}</span>
+              </td>
+              <td>
+                <span class="status-badge" [attr.data-status]="ticket.status">{{
+                  ticket.status
+                }}</span>
+              </td>
+              <td>{{ ticket.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td>
+                <a class="details-link" [routerLink]="['/tickets', ticket.id]"
+                  >Abrir <span aria-hidden="true">→</span></a
+                >
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <app-pagination
+      [currentPage]="currentPage()"
+      [pageCount]="pageCount()"
+      (pageChange)="changePage($event)"
+    />
+  }
+</section>

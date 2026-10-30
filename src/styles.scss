@@ -1,1 +1,179 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  color-scheme: light;
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  color: #17212b;
+  background: #f3f5f7;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+input,
+select,
+textarea,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 3px solid #2871c8;
+  outline-offset: 2px;
+}
+
+.eyebrow {
+  margin: 0 0 0.4rem;
+  color: #64788b;
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.65rem;
+  padding: 0.65rem 0.95rem;
+  border: 1px solid transparent;
+  border-radius: 0.65rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+.button-primary {
+  background: #1e66a8;
+  color: #fff;
+}
+.button-primary:hover {
+  background: #174f84;
+}
+.button-secondary {
+  border-color: #d8e1e9;
+  background: #fff;
+  color: #29465f;
+}
+.button-secondary:hover {
+  background: #f5f8fa;
+}
+.button-quiet {
+  background: transparent;
+  color: #42617d;
+}
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.notice {
+  margin: 0.75rem 0;
+  padding: 0.9rem 1rem;
+  border-radius: 0.7rem;
+  line-height: 1.5;
+}
+.notice-error {
+  border: 1px solid #f0c4c5;
+  background: #fff2f2;
+  color: #87373b;
+}
+.notice-success {
+  border: 1px solid #bde4cf;
+  background: #edfaf2;
+  color: #247451;
+}
+.status-badge,
+.priority-badge {
+  display: inline-flex;
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+  background: #eef2f6;
+  color: #526273;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.status-badge[data-status='Aberto'] {
+  background: #edf2f8;
+  color: #4b657d;
+}
+.status-badge[data-status='Em atendimento'] {
+  background: #fff2d9;
+  color: #946316;
+}
+.status-badge[data-status='Aguardando solicitante'] {
+  background: #f1eaff;
+  color: #674da0;
+}
+.status-badge[data-status='Resolvido'] {
+  background: #e5f5ed;
+  color: #247451;
+}
+.status-badge[data-status='Fechado'] {
+  background: #e9edf1;
+  color: #5c6975;
+}
+.priority-badge[data-priority='critical'] {
+  background: #fde9e8;
+  color: #ad3c3e;
+}
+.priority-badge[data-priority='high'] {
+  background: #fff0e3;
+  color: #a45519;
+}
+.priority-badge[data-priority='medium'] {
+  background: #fff5d9;
+  color: #8d6d19;
+}
+.priority-badge[data-priority='low'] {
+  background: #edf3f7;
+  color: #586e80;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.ticket-number {
+  color: #708194;
+  font-size: 0.85rem;
+  font-weight: 750;
+}
+.source-tag {
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  background: #eef2f6;
+  color: #607386;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+.event-count {
+  display: inline-flex;
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+  background: #edf2f8;
+  color: #4b657d;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
